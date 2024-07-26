@@ -102,8 +102,8 @@ export default function Home() {
 
                 <div className="mx-auto mt-16 max-w-7xl px-6 sm:mt-20 md:mt-24">
                     <dl className=" mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-gray-600 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-x-8 lg:gap-y-16">
-                        {feautures.map((feature, index) => (
-                            <div className="relative pl-9" key={index}>
+                        {feautures.map((feature) => (
+                            <div className="relative pl-9" key={feature.name}>
                                 <dt className="inline font-semibold text-gray-900">
                                     <feature.icon
                                         aria-hidden="true"
