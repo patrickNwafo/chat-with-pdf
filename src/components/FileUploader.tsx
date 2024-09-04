@@ -22,16 +22,19 @@ function FileUploader() {
         }
     }, [fileId, router]);
 
-    const onDrop = useCallback(async (acceptedFiles: File[]) => {
-        // Do something with the files
-        const file = acceptedFiles[0];
-        if (file) {
-            await handleUpload(file);
-        } else {
-            // do nothing..
-            // toast..
-        }
-    }, []);
+    const onDrop = useCallback(
+        async (acceptedFiles: File[]) => {
+            // Do something with the files
+            const file = acceptedFiles[0];
+            if (file) {
+                await handleUpload(file);
+            } else {
+                // do nothing..
+                // toast..
+            }
+        },
+        [handleUpload]
+    );
 
     const statusIcons: {
         [key in StatusText]: JSX.Element;
@@ -89,33 +92,35 @@ function FileUploader() {
                 </div>
             )}
 
-            <div
-                {...getRootProps()}
-                className={`border-indigo-600 p-10 border-2 border-dashed mt-10 w-[90%] text-indigo-600 rounded-lg h-96 flex items-center text-center justify-center ${
-                    isFocused || isDragActive
-                        ? "bg-indigo-300"
-                        : "bg-indigo-100"
-                }`}
-            >
-                <input {...getInputProps()} />
+            {!uploadInProgress && (
+                <div
+                    {...getRootProps()}
+                    className={`border-indigo-600 p-10 border-2 border-dashed mt-10 w-[90%] text-indigo-600 rounded-lg h-96 flex items-center text-center justify-center ${
+                        isFocused || isDragActive
+                            ? "bg-indigo-300"
+                            : "bg-indigo-100"
+                    }`}
+                >
+                    <input {...getInputProps()} />
 
-                <div className="flex flex-col items-center justify-center">
-                    {isDragActive ? (
-                        <>
-                            <RocketIcon className="h-20 w-20 animate-ping" />
-                            <p>Drop the files here ...</p>
-                        </>
-                    ) : (
-                        <>
-                            <CircleArrowDown className="h-20 w-20 animate-bounce" />
-                            <p>
-                                Drag &apos;n&lsquo; drop some files here, or
-                                click to select files
-                            </p>
-                        </>
-                    )}
+                    <div className="flex flex-col items-center justify-center">
+                        {isDragActive ? (
+                            <>
+                                <RocketIcon className="h-20 w-20 animate-ping" />
+                                <p>Drop the files here ...</p>
+                            </>
+                        ) : (
+                            <>
+                                <CircleArrowDown className="h-20 w-20 animate-bounce" />
+                                <p>
+                                    Drag &apos;n&lsquo; drop some files here, or
+                                    click to select files
+                                </p>
+                            </>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
