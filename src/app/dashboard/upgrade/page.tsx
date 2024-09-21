@@ -1,14 +1,48 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import useSubscription from "@/hooks/useSubscription";
+import getStripe from "@/lib/stripe-js";
 import { useUser } from "@clerk/nextjs";
 import { CheckIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+
+export type UserDetails = {
+    email: string;
+    name: string;
+};
 
 function PricingPage() {
     const { user } = useUser();
     const router = useRouter();
     //  pull in user's subscription
+    const { hasActiveMembership, loading } = useSubscription();
+    const [isPending, startTransition] = useTransition();
+
+    const handleUpgrade = () => {
+        if (!user) return;
+
+        const userDetails: UserDetails = {
+            email: user?.primaryEmailAddress?.toString()!,
+            name: user?.fullName!,
+        };
+
+        startTransition(async () => {
+            // Load Stripe
+            const stripe = await getStripe();
+
+            if (hasActiveMembership) {
+                // create stripe portal...
+            }
+
+            const sessionId = await createCheckoutSession(userDetails);
+
+            await stripe?.redirectToCheckout({
+                sessionId,
+            });
+        });
+    };
 
     return (
         <div>
@@ -77,8 +111,16 @@ function PricingPage() {
                                 / month
                             </span>
                         </p>
-                        <Button className="bg-indigo-600 w-full text-white shadow-sm hover:bg-indigo-500 mt-6 block rounded-md px-3 py-2 text-center text-sm font-semebold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Upgrade to Pro
+                        <Button
+                            className="bg-indigo-600 w-full text-white shadow-sm hover:bg-indigo-500 mt-6 block rounded-md px-3 py-2 text-center text-sm font-semebold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            disabled={loading || isPending}
+                            onClick={handleUpgrade}
+                        >
+                            {isPending || loading
+                                ? "Loading..."
+                                : hasActiveMembership
+                                ? "Manage Plan"
+                                : "Upgrade to Pro"}
                         </Button>
 
                         <ul
