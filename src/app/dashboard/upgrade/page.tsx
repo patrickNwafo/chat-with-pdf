@@ -7,6 +7,8 @@ import { useUser } from "@clerk/nextjs";
 import { CheckIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
+import { createCheckoutSession } from "../../../../actions/createCheckoutSession";
+import { createStripePortal } from "../../../../actions/createStripePortal";
 
 export type UserDetails = {
     email: string;
@@ -34,6 +36,9 @@ function PricingPage() {
 
             if (hasActiveMembership) {
                 // create stripe portal...
+
+                const stripePortalUrl = await createStripePortal();
+                return router.push(stripePortalUrl);
             }
 
             const sessionId = await createCheckoutSession(userDetails);
@@ -55,6 +60,7 @@ function PricingPage() {
                         Supercharge your Document Companion
                     </p>
                 </div>
+                {/* trendy-winner-cohere-enrapt */}
 
                 <p className="mx-auto mt-6 max-w-2xl px-10 text-center text-lg leading-8 text-gray-600">
                     Choose an affordable plan thats packed with the best
