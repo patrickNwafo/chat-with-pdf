@@ -10,6 +10,7 @@ import { collection, orderBy, query } from "firebase/firestore";
 import { db } from "../../firebase";
 import { askQuestion } from "../../actions/askQuestion";
 import ChatMessage from "./ChatMessage";
+import { useToast } from "@/hooks/use-toast";
 
 export type Message = {
     id?: string;
@@ -20,6 +21,7 @@ export type Message = {
 
 function Chat({ id }: { id: string }) {
     const { user } = useUser();
+    const { toast } = useToast();
 
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
@@ -93,8 +95,15 @@ function Chat({ id }: { id: string }) {
 
         startTransition(async () => {
             const { success, message } = await askQuestion(id, q);
+
             if (!success) {
-                // toast
+                // toast..
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: message,
+                });
+
                 setMessages((prev) =>
                     prev.slice(0, prev.length - 1).concat([
                         {

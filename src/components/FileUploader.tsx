@@ -5,16 +5,19 @@ import {
     CheckCircleIcon,
     CircleArrowDown,
     HammerIcon,
-    HomeIcon,
     RocketIcon,
     SaveIcon,
 } from "lucide-react";
 import useUpload, { StatusText } from "@/hooks/useUpload";
 import { useRouter } from "next/navigation";
+import useSubscription from "@/hooks/useSubscription";
+import { useToast } from "@/hooks/use-toast";
 
 function FileUploader() {
     const { progress, status, fileId, handleUpload } = useUpload();
+    const { isOverFileLimit, filesLoading } = useSubscription();
     const router = useRouter();
+    const { toast } = useToast();
 
     useEffect(() => {
         if (fileId) {
@@ -25,9 +28,19 @@ function FileUploader() {
     const onDrop = useCallback(
         async (acceptedFiles: File[]) => {
             // Do something with the files
+
             const file = acceptedFiles[0];
             if (file) {
-                await handleUpload(file);
+                if (!isOverFileLimit && !filesLoading) {
+                    await handleUpload(file);
+                } else {
+                    toast({
+                        variant: "destructive",
+                        title: "Free Plan File Limit Reached",
+                        description:
+                            "You have reached the maximum number of the files allowed for your account, please upgrade to add more documents.",
+                    });
+                }
             } else {
                 // do nothing..
                 // toast..
@@ -66,9 +79,9 @@ function FileUploader() {
         <div className=" flex flex-col gap-4 items-center max-w-7xl mx-auto">
             {/* Loading Section */}
             {uploadInProgress && (
-                <div className="mt-32 flex justify-center items-center gaps-5">
+                <div className="mt-32 flex justify-center items-center gap-5">
                     <div
-                        className={`radia-progress bg-indigo-300 text-white border-indigo-600 border-4 ${
+                        className={` radial-progress bg-indigo-300 text-white border-indigo-600 border-4 ${
                             progress === 100 && "hidden"
                         }`}
                         role="progressbar"
