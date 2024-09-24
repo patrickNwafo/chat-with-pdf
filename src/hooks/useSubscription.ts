@@ -50,7 +50,7 @@ function useSubscription() {
         );
 
         setIsOverFileLimit(files.length >= usersLimit);
-    }, [filesSnapshot, hasActiveMembership, PRO_LIMIT, FREE_LIMIT]);
+    }, [filesSnapshot, hasActiveMembership]);
 
     return {
         hasActiveMembership,
